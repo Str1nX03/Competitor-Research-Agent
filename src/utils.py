@@ -4,6 +4,7 @@ import logging
 from langchain_groq import ChatGroq
 from src.logger import logging
 from src.exception import CustomException
+from ddgs import DDGS
 
 def get_llm(model_name: str = "llama-3.1-8b-instant", temperature: float = 0.0) -> ChatGroq:
     """
@@ -50,5 +51,47 @@ def get_llm(model_name: str = "llama-3.1-8b-instant", temperature: float = 0.0) 
 
     except Exception as e:
         
+        raise CustomException(e, sys)
+
+def fetch_data(query: str, max_results: int = 5) -> list:
+    """
+    Fetches real-time search results from the internet using DuckDuckGo (ddgs).
+
+    This function uses the `ddgs` module to perform a web search and returns 
+    a list of dictionaries containing search results (title, href, body).
+
+    Args:
+        query (str): The search query string.
+        max_results (int, optional): The maximum number of search results to return. 
+            Defaults to 5.
+
+    Returns:
+        list: A list of dictionaries, where each dictionary contains:
+            - 'title': The title of the search result.
+            - 'href': The URL of the search result.
+            - 'body': A snippet or description of the result.
+
+    Raises:
+        CustomException: If there's an error during the search process.
+
+    Example:
+        ```python
+        from src.utils import fetch_data
+        results = fetch_data("Latest news on LangChain", max_results=3)
+        for res in results:
+            print(f"Title: {res['title']}\nLink: {res['href']}\n")
+        ```
+    """
+    try:
+        logging.info(f"Fetching data for query: {query}")
+        
+        with DDGS() as ddgs:
+            results = [r for r in ddgs.text(query, max_results=max_results)]
+        
+        logging.info(f"Successfully fetched {len(results)} results for query: {query}")
+        return results
+
+    except Exception as e:
+        logging.error(f"Error fetching data from DDGS: {str(e)}")
         raise CustomException(e, sys)
 
