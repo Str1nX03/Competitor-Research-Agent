@@ -1,6 +1,5 @@
 import os
 import sys
-import logging
 from typing import Dict, Any, List
 from fpdf import FPDF
 from langgraph.graph import StateGraph, START, END
@@ -138,7 +137,6 @@ class ReportAgent:
             new_retry_count = retry_count
             if "RELEVANT" not in result:
                 new_retry_count += 1
-                logging.warning(f"ReportAgent Hallucination: {result}. Retry {new_retry_count}/3")
 
             return {
                 "hallucination_check": result,
@@ -169,7 +167,6 @@ class ReportAgent:
         if retry_count < 5:
             return "retry"
         
-        logging.warning(f"ReportAgent: Max retries reached (5/5). Proceeding with best available data. Reason: {check_result}")
         return "continue"
 
     def _generate_report(self, state: ReportAgentState) -> Dict[str, Any]:
@@ -307,7 +304,6 @@ class ReportAgent:
                 
                 except Exception as inner_e:
                     pdf.set_x(10) # Reset X on error
-                    logging.error(f"Error parsing line: {clean_line}. Error: {inner_e}")
                     pdf.set_font("Arial", "", 11)
                     # Aggressive cleanup here too
                     text = clean_line.replace('**', '').replace('*', '')
