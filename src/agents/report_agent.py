@@ -309,7 +309,9 @@ class ReportAgent:
                     text = clean_line.replace('**', '').replace('*', '')
                     pdf.multi_cell(0, 8, txt=text.encode('latin-1', 'replace').decode('latin-1'))
 
-            output_dir = "outputs"
+            is_vercel = os.environ.get("VERCEL") == "1"
+            output_dir = "/tmp" if is_vercel else "outputs"
+            
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
             

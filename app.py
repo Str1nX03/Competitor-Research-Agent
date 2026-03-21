@@ -8,8 +8,10 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Ensure outputs directory exists
-OUTPUTS_DIR = os.path.join(os.getcwd(), "outputs")
+# Ensure outputs directory exists (Handling Vercel's read-only filesystem)
+is_vercel = os.environ.get("VERCEL") == "1"
+OUTPUTS_DIR = "/tmp" if is_vercel else os.path.join(os.getcwd(), "outputs")
+
 if not os.path.exists(OUTPUTS_DIR):
     os.makedirs(OUTPUTS_DIR)
 
