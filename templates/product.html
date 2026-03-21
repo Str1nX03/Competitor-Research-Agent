@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompeteAI | Research Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="app-body">
+    <nav>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="/" class="logo" style="text-decoration: none;">CompeteAI</a>
+            <div class="nav-links">
+                <a href="/">Back to Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="app-container">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h1 style="font-size: 2.5rem;">Competitor Research Agent</h1>
+                <p style="color: var(--text-muted);">Enter your product details to generate a comprehensive competitor intelligence report.</p>
+            </div>
+
+            <div class="research-form">
+                <form id="researchForm">
+                    <div class="form-group">
+                        <label for="productTitle">Product Title</label>
+                        <input type="text" id="productTitle" name="productTitle" placeholder="e.g., SolarPowered Smart Watch" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDescription">Product Description</label>
+                        <textarea id="productDescription" name="productDescription" rows="4" placeholder="Describe what your product does, its target audience, and key features..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">Start Researching</button>
+                </form>
+
+                <div id="loadingArea" class="loading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 1rem; color: var(--primary); font-weight: 500;" id="statusText">Agent is initializing...</p>
+                    <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">This may take 1-2 minutes depending on research depth.</p>
+                </div>
+
+                <div id="resultArea" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--glass-border); text-align: center;">
+                    <div style="background: rgba(99, 102, 241, 0.1); padding: 2rem; border-radius: 16px; margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 0.5rem;">Research Complete!</h3>
+                        <p style="color: var(--text-muted);">A detailed intelligence report has been generated for you.</p>
+                    </div>
+                    <a id="downloadLink" href="#" class="cta-button" target="_blank" style="display: inline-block;">Download PDF Report</a>
+                </div>
+                
+                <div id="errorArea" style="display: none; margin-top: 2rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; color: #f87171; text-align: center;">
+                    <p id="errorText">An error occurred during research.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer style="padding: 4rem 0; text-align: center; color: var(--text-muted);">
+        <p>&copy; 2026 CompeteAI Intelligence System.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

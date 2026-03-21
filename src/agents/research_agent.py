@@ -7,7 +7,8 @@ from src.utils import get_llm, fetch_data
 from src.exception import CustomException
 from src.prompts.research_agent_prompt import (
     HALLUCINATION_CHECKER_PROMPT, 
-    QUERY_GENERATOR_PROMPT
+    QUERY_GENERATOR_PROMPT,
+    COMPETITOR_EXTRACTOR_PROMPT
 )
 
 class ResearchAgent:
@@ -56,12 +57,14 @@ class ResearchAgent:
             # Define nodes
             workflow.add_node("generate_query", self._generate_query)
             workflow.add_node("internet_data", self._internet_data)
+            workflow.add_node("extract_competitors", self._extract_competitors)
             workflow.add_node("checking_hallucination", self._checking_hallucination)
 
             # Define edges
             workflow.add_edge(START, "generate_query")
             workflow.add_edge("generate_query", "internet_data")
-            workflow.add_edge("internet_data", "checking_hallucination")
+            workflow.add_edge("internet_data", "extract_competitors")
+            workflow.add_edge("extract_competitors", "checking_hallucination")
             
             # Conditional edge from checking_hallucination
             workflow.add_conditional_edges(
@@ -117,7 +120,7 @@ class ResearchAgent:
             query = state.get("current_query")
             history = state.get("query_history", [])
             
-            raw_results = fetch_data(query, max_results=5)
+            raw_results = fetch_data(query, max_results=15)
             
             history.append(query)
             
@@ -127,6 +130,44 @@ class ResearchAgent:
             }
         except Exception as e:
             raise CustomException(e, sys)
+
+    def _extract_competitors(self, state: ResearchAgentState) -> Dict[str, Any]:
+        """
+        Node to parse raw search results and extract exactly 5 relevant competitors.
+
+        Args:
+            state (ResearchAgentState): The current state.
+
+        Returns:
+            Dict[str, Any]: Updates 'competitors_data' with a structured list.
+        """
+        try:
+            import json
+            raw_data = state.get("competitors_data")
+            product = state.get("product_title")
+            desc = state.get("product_description")
+            
+            prompt = COMPETITOR_EXTRACTOR_PROMPT.format(
+                product=product,
+                description=desc,
+                raw_data=str(raw_data)
+            )
+            
+            response = self.llm.invoke(prompt)
+            content = response.content.strip()
+            
+            # Basic JSON cleanup if needed
+            if "```json" in content:
+                content = content.split("```json")[-1].split("```")[0].strip()
+            elif "```" in content:
+                content = content.split("```")[-1].split("```")[0].strip()
+                
+            competitors = json.loads(content)
+            
+            return {"competitors_data": competitors}
+        except Exception as e:
+            logging.error(f"Error in extraction: {e}")
+            return {"competitors_data": []}
 
     def _checking_hallucination(self, state: ResearchAgentState) -> Dict[str, Any]:
         """
@@ -143,23 +184,26 @@ class ResearchAgent:
             CustomException: If the validation process fails.
         """
         try:
-            competitors = state.get("competitors_data")
+            competitors = state.get("competitors_data", [])
             product = state.get("product_title")
             retry_count = state.get("retry_count", 0)
             
-            prompt = HALLUCINATION_CHECKER_PROMPT.format(
-                product=product,
-                competitors=competitors
-            )
+            # If we have fewer than 5, it's a failure (we want at least 5)
+            if len(competitors) < 5:
+                result = f"FAILURE: Only found {len(competitors)} competitors. Need at least 5."
+            else:
+                prompt = HALLUCINATION_CHECKER_PROMPT.format(
+                    product=product,
+                    competitors=competitors
+                )
+                response = self.llm.invoke(prompt)
+                result = response.content.upper()
             
-            response = self.llm.invoke(prompt)
-            result = response.content.upper()
-            
-            # Increment retry count if hallucination detected
+            # Increment retry count if hallucination or insufficient data detected
             new_retry_count = retry_count
-            if "RELEVANT" not in result:
+            if "RELEVANT" not in result or len(competitors) < 5:
                 new_retry_count += 1
-                logging.warning(f"Hallucination detected. Retry {new_retry_count}/3. Reason: {result}")
+                logging.warning(f"Validation failed. Retry {new_retry_count}/5. Reason: {result}")
 
             return {
                 "hallucination_check": result,
@@ -187,14 +231,11 @@ class ResearchAgent:
         if "RELEVANT" in check_result:
             return "continue"
         
-        if retry_count < 3:
+        if retry_count < 5:
             return "retry"
         
-        raise CustomException(
-            f"Max retries reached (3/3). Agent failed to find relevant data. "
-            f"Last Reason: {check_result}",
-            sys
-        )
+        logging.warning(f"ResearchAgent: Max retries reached (5/5). Proceeding with best available data. Reason: {check_result}")
+        return "continue"
 
     def run(self, product_title: str, product_description: str):
         """
