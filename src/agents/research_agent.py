@@ -1,5 +1,4 @@
 import sys
-import logging
 from typing import Dict, Any
 from langgraph.graph import StateGraph, START, END
 from src.graph.state import ResearchAgentState
@@ -166,7 +165,6 @@ class ResearchAgent:
             
             return {"competitors_data": competitors}
         except Exception as e:
-            logging.error(f"Error in extraction: {e}")
             return {"competitors_data": []}
 
     def _checking_hallucination(self, state: ResearchAgentState) -> Dict[str, Any]:
@@ -203,7 +201,6 @@ class ResearchAgent:
             new_retry_count = retry_count
             if "RELEVANT" not in result or len(competitors) < 5:
                 new_retry_count += 1
-                logging.warning(f"Validation failed. Retry {new_retry_count}/5. Reason: {result}")
 
             return {
                 "hallucination_check": result,
@@ -234,7 +231,6 @@ class ResearchAgent:
         if retry_count < 5:
             return "retry"
         
-        logging.warning(f"ResearchAgent: Max retries reached (5/5). Proceeding with best available data. Reason: {check_result}")
         return "continue"
 
     def run(self, product_title: str, product_description: str):

@@ -1,8 +1,6 @@
 import os
 import sys
-import logging
 from langchain_groq import ChatGroq
-from src.logger import logging
 from src.exception import CustomException
 from ddgs import DDGS
 
@@ -36,16 +34,11 @@ def get_llm(model_name: str = "llama-3.1-8b-instant", temperature: float = 0.0) 
         ```
     """
     try:
-
-        logging.info("Initializing Groq LLM")
-
         llm = ChatGroq(
             groq_api_key=os.getenv("GROQ_API_KEY"),
             model_name=model_name,
             temperature=temperature
         )
-
-        logging.info("Groq LLM initialized successfully")
 
         return llm
 
@@ -83,15 +76,11 @@ def fetch_data(query: str, max_results: int = 5) -> list:
         ```
     """
     try:
-        logging.info(f"Fetching data for query: {query}")
-        
         with DDGS() as ddgs:
             results = [r for r in ddgs.text(query, max_results=max_results)]
         
-        logging.info(f"Successfully fetched {len(results)} results for query: {query}")
         return results
 
     except Exception as e:
-        logging.error(f"Error fetching data from DDGS: {str(e)}")
         raise CustomException(e, sys)
 
