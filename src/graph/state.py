@@ -31,3 +31,20 @@ class ResearchAgentState(TypedDict):
     hallucination_check: Optional[str]
     instructions: Optional[str]
     final_response: Optional[Dict[str, Any]]
+
+class ReportAgentState(TypedDict):
+    """
+    Represents the state of the report agent workflow.
+
+    Attributes:
+        competitors_data (List[Dict[str, Any]]): Data passed from the research agent.
+        detailed_research (Dict[str, Any]): Deep research results for each competitor.
+        final_report (str): The complete markdown/text report content.
+        pdf_path (str): The file path where the PDF report is saved.
+    """
+    competitors_data: List[Dict[str, Any]]
+    detailed_research: Dict[str, Any]
+    final_report: str
+    pdf_path: str
+    retry_count: int
+    hallucination_check: str

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitor Intelligence | Future of Market Research</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div class="logo">CompeteAI</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="/app" class="cta-button" style="padding: 0.6rem 1.5rem; margin-left: 2rem; box-shadow: none; animation: none;">Launch App</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1>Outsmart Your Competition <br>with <span style="color: var(--primary)">AI Intelligence</span></h1>
+            <p>Automated competitor research, real-time data extraction, and professional report generation in minutes. Not days.</p>
+            <a href="/app" class="cta-button">Get Started Now</a>
+        </div>
+    </header>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem;">Why CompeteAI?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Multi-Agent Intelligence</h3>
+                    <p>Powered by LangGraph, our Research and Report agents work in tandem to validate data and generate deep insights.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Real-time Data Fetching</h3>
+                    <p>We don't rely on stale databases. Our agents scout the live web for the most current competitor moves and pricing.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>PDF Export</h3>
+                    <p>Get professional, executive-ready PDF reports with detailed company history, pros, cons, and milestones.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 8rem 0; background: rgba(99, 102, 241, 0.05);">
+        <div class="container" style="display: flex; align-items: center; gap: 4rem;">
+            <div style="flex: 1;">
+                <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem;">Built for the Modern Strategist</h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Our platform uses advanced Hallucination Checking to ensure every byte of data in your report is accurate. If our agent detects irrelevant data, it automatically refines its search query and tries again—up to 3 times—to get you the truth.</p>
+                <ul style="list-style: none; color: var(--text-muted);">
+                    <li style="margin-bottom: 1rem;">✓ Precise Query Refinement</li>
+                    <li style="margin-bottom: 1rem;">✓ Deep Company History Research</li>
+                    <li style="margin-bottom: 1rem;">✓ Automated Pros & Cons Analysis</li>
+                </ul>
+            </div>
+            <div style="flex: 1; background: var(--bg-card); padding: 2rem; border-radius: 24px; border: 1px solid var(--glass-border);">
+                <!-- Placeholder for dynamic visualization or image -->
+                <div style="width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--primary);">
+                    Dynamic Analytics Preview
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer style="padding: 4rem 0; border-top: 1px solid var(--glass-border); text-align: center; color: var(--text-muted);">
+        <p>&copy; 2026 CompeteAI Research Intelligence. All rights reserved.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

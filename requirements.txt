@@ -7,3 +7,5 @@ langchain-core
 python-dotenv
 flask
 ddgs
+fpdf2
+gunicorn
